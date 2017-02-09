@@ -1,13 +1,18 @@
+const mongoose = require('mongoose');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const connection = require('../lib/connection');
-const app = require('../../lib/routes/shoes');
-const assert = chai.assert;
 chai.use(chaiHttp);
+
+const assert = chai.assert;
+// !
+const app = require('../../lib/app'); // ! need to write
+// !
+require('../../lib/connection');
+
+process.env.MONGODB_URI = 'mongodb://localhost:27017/shoes-test';
 
 describe('shoes REST HTTP API', () => {
 
-    const DB_URI = 'mongodb://localhost:27017/shoes-test';
     const request = chai.request(app);
 
     // test shoes
@@ -26,9 +31,7 @@ describe('shoes REST HTTP API', () => {
         brand: 'Adidas'
     };
 
-    before(() => connection.connect(DB_URI));
-    before(() => connection.db.dropDatabase());
-    after(() => connection.closeCurrentDb());
+    before(() => mongoose.connection.dropDatabase());
 
     it('GET returns an empty array of shoes', () => {
         return request.get('/shoes')
@@ -37,25 +40,11 @@ describe('shoes REST HTTP API', () => {
     });
 
     it('POSTs a shoe with an id', () => {
-        /* this is the refactored version with postShoe()*/
-        // return postShoe(ajXI)
-        //     .then(savedShoe => {
-        //         assert.isOk(savedShoe._id);
-        //         ajXI._id = savedShoe._id;
-        //         assert.deepEqual(savedShoe, ajXI);
-        //     })
-
-        /* this is postShoe() */
-        return request.post('/shoes')
-            .send(ajXI)
-            .then(res => res.body)
-            /* this is postShoe() ^^ */
-            // <res.body> can't be in place of <saved>
-            // because js will interpret it as an obj
-            .then(saved => {
-                assert.isOk(saved._id);
-                ajXI._id = saved._id;
-                assert.deepEqual(ajXI._id, saved._id)
+        return postShoe(ajXI)
+            .then(savedShoe => {
+                assert.isOk(savedShoe._id);
+                ajXI._id = savedShoe._id;
+                assert.deepEqual(savedShoe, ajXI);
             })
     });
 
@@ -136,7 +125,6 @@ describe('shoes REST HTTP API', () => {
         return request.post('/shoes')
             .send(shoe)
             .then(res =>
-                // console.log('rezbody..', res.body)
                 res.body);
     }
 

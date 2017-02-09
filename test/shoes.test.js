@@ -96,6 +96,12 @@ describe('shoes REST HTTP API', () => {
             });
     });
 
+    it('GETs the updated /shoes after a DELETion', () => {
+        return request.get('/shoes')
+        .then(res => res.body)
+        .then(shoes => assert.deepEqual(shoes, [pennyII, pureBoost]));
+    });
+
     function postShoe(shoe) {
         return request.post('/shoes')
             .send(shoe)

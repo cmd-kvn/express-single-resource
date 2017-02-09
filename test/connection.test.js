@@ -3,7 +3,7 @@ const connection = require('../lib/connection');
 
 // run "gomongo" in terminal before you run this test
 
-describe('Connect to mongodb', () => {
+describe.skip('Connect to mongodb', () => {
     const DB_URI = 'mongodb://localhost:27017/connect-test';
     let db = null;
 

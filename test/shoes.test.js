@@ -58,7 +58,8 @@ describe('shoes REST HTTP API', () => {
             .send(ajXI)
             .then(res => res.body)
         /* this is postShoe() ^^ */
-
+            // <res.body> can't be in place of <saved>
+            // because js will interpret it as an obj
             .then(saved => {
                 assert.isOk(saved._id);
                 ajXI._id = saved._id;
@@ -66,11 +67,18 @@ describe('shoes REST HTTP API', () => {
             }) 
     });
 
-    it('GETs a POSTed pet by its id', () => {
+    it('GETs a POSTed shoe by its id', () => {
         return request.get(`/shoes/${ajXI._id}`)
             .then(res => {
-                console.log('rezbody', res);
                 assert.deepEqual(res.body, ajXI);
             });
     });
+
+    it('DELETEs a shoe', () => {
+        return request.del(`/shoes/${ajXI._id}`)
+            .then(res => {
+                assert.isTrue(res.body.deleted); // is 1
+            });
+    });
+
 });

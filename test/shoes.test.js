@@ -6,19 +6,9 @@ const assert = chai.assert;
 chai.use(chaiHttp);
 
 describe('shoes REST HTTP API', () => {
-    
+
     const DB_URI = 'mongodb://localhost:27017/shoes-test';
     const request = chai.request(app);
-
-    before(() => connection.connect(DB_URI));
-    before(() => connection.db.dropDatabase());
-    after(() => connection.closeCurrentDb());
-
-    it('GET returns an empty array of shoes', () => {
-        return request.get('/shoes')
-        .then(req => req.body)
-        .then(shoes => assert.deepEqual(shoes, []));
-    });
 
     // test shoes
     let ajXI = {
@@ -36,13 +26,15 @@ describe('shoes REST HTTP API', () => {
         brand: 'Adidas'
     };
 
-    function postShoe(shoe) {
-        return request.post('/shoes')
-            .send(shoe)
-            .then(res => {
-                console.log('rezbody..', res.body)
-                res.body});
-    }
+    before(() => connection.connect(DB_URI));
+    before(() => connection.db.dropDatabase());
+    after(() => connection.closeCurrentDb());
+
+    it('GET returns an empty array of shoes', () => {
+        return request.get('/shoes')
+            .then(req => req.body)
+            .then(shoes => assert.deepEqual(shoes, []));
+    });
 
     it('POSTs a shoe with an id', () => {
         /* this is the refactored version with postShoe()*/
@@ -64,7 +56,7 @@ describe('shoes REST HTTP API', () => {
                 assert.isOk(saved._id);
                 ajXI._id = saved._id;
                 assert.deepEqual(ajXI._id, saved._id)
-            }) 
+            })
     });
 
     it('GETs a POSTed shoe by its id', () => {
@@ -74,11 +66,42 @@ describe('shoes REST HTTP API', () => {
             });
     });
 
-    it('DELETEs a shoe', () => {
+    it('GETs multiple POSTed shoes', () => {
+        return Promise.all([
+            postShoe(pennyII),
+            postShoe(pureBoost)
+        ])
+        .then(savedShoes => {
+            pennyII = savedShoes[0];
+            pureBoost = savedShoes[1];
+        })
+        .then(() => request.get('/shoes'))
+        .then(res => {
+            const shoes = res.body;
+            assert.deepEqual(shoes, [ajXI, pennyII, pureBoost]);
+        });
+    });
+
+    it('DELETEs a shoe by id', () => {
         return request.del(`/shoes/${ajXI._id}`)
             .then(res => {
                 assert.isTrue(res.body.deleted); // is 1
             });
     });
+
+    it('can not DELETE a nonexistant shoe', () => {
+        return request.del(`/shoes/${ajXI._id}`)
+            .then(res => {
+                assert.isFalse(res.body.deleted);
+            });
+    });
+
+    function postShoe(shoe) {
+        return request.post('/shoes')
+            .send(shoe)
+            .then(res => 
+                // console.log('rezbody..', res.body)
+                res.body);
+    }
 
 });

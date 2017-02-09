@@ -65,4 +65,12 @@ describe('shoes REST HTTP API', () => {
                 assert.deepEqual(ajXI._id, saved._id)
             }) 
     });
+
+    it('GETs a POSTed pet by its id', () => {
+        return request.get(`/shoes/${ajXI._id}`)
+            .then(res => {
+                console.log('rezbody', res);
+                assert.deepEqual(res.body, ajXI);
+            });
+    });
 });

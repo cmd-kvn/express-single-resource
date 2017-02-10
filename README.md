@@ -1,2 +1,2 @@
-part of install
+part of install:
 `> mongod --dbpath <path to database>`

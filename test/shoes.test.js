@@ -55,8 +55,8 @@ describe('shoes REST HTTP API', () => {
             .then(saved => {
                 assert.isOk(saved._id);
                 ajXI._id = saved._id;
-                assert.deepEqual(ajXI._id, saved._id)
-            })
+                assert.deepEqual(ajXI._id, saved._id);
+            });
     });
 
     it('GETs a POSTed shoe by its id', () => {
@@ -104,13 +104,12 @@ describe('shoes REST HTTP API', () => {
 
     it.skip('returns error when !GET/:id', () => {
         // const fakeId = ajXI._id.slice(0, -3) + '8o8';
-        const fakeId = '589c2f5525066f788d0238o8';
+        // const fakeId = '589c2f5525066f788d0238o8';
 
         return request.get('/shoes/589c2f5525066f788d0238o8')//(`/shoes/${fakeId}`)
             .then(
             () => { throw new Error('successful status code not expected'); },
             res => {
-                console.log('rezbod is..', res.response);
                 assert.equal(res.status, 500);
                 // assert.ok(res.response.body.error);
             }
@@ -121,11 +120,11 @@ describe('shoes REST HTTP API', () => {
         pennyII.color = 'atlantic blue';
         const url = `/shoes/${pennyII._id}`;
 
-        return request.put(`/shoes/${pennyII._id}`)
+        return request.put(url)
             .send(pennyII)
             .then(res => {
                 assert.deepEqual(res.body, pennyII);
-                return request.get(`/shoes/${pennyII._id}`);
+                return request.get(url);
             })
             .then(res => {
                 assert.deepEqual(res.body, pennyII);

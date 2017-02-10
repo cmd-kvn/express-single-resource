@@ -4,6 +4,7 @@
   "description": "This project uses express and mongodb to write a single resource HTTP REST API",
   "main": "index.js",
   "scripts": {
+    "pretest": "eslint .",
     "test": "mocha"
   },
   "repository": {
